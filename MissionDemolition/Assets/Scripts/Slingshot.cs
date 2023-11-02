@@ -15,7 +15,7 @@ public class Slingshot : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        launchPoint.SetActive(false);   
     }
 
     // Update is called once per frame
@@ -30,21 +30,49 @@ public class Slingshot : MonoBehaviour
         Vector3 launchPos = launchPoint.transform.position;
         
         Vector3 delta = launchPos - mouse3D;
-        double distance = Math.Pow(Math.Pow(delta.x, 2) + Math.Pow(delta.y, 2), 0.5);
+
+        float maxMagnitude = this.GetComponent<SphereCollider>().radius;
+        if(delta.magnitude > maxMagnitude)
+        {
+            delta.Normalize();
+            delta *= maxMagnitude;
+        }
         
-        if(distance < 0.5f)
+        projectile.transform.position = mouse3D;
+
+        if(Input.GetMouseButtonUp(0))
+        {
+            aimMode = false;
+            Rigidbody rb = projectile.GetComponent<Rigidbody>();
+            rb.isKinematic = false;
+            rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+            rb.velocity = -delta * 10f;
+            projectile = null;
+        }
+
+        if(Input.GetMouseButtonDown(0))
         {
             projectile = Instantiate(projectilePrefab);
+            projectile.transform.position = launchPos;
         }
+    }
+
+    private void OnMouseEnter()
+    {
+        if(projectile == null)
+        {
+            launchPoint.SetActive(true);
+        }
+    }
+
+    private void OnMouseExit()
+    {
+        launchPoint.SetActive(false);
     }
 
     private void OnMouseDown()
     {
         aimMode = true;
-    }
-
-    private void OnMouseUp()
-    {
-        aimMode = false;
+        launchPoint.SetActive(false);
     }
 }

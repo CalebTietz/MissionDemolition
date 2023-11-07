@@ -38,7 +38,16 @@ public class Slingshot : MonoBehaviour
             delta *= maxMagnitude;
         }
         
-        projectile.transform.position = mouse3D;
+
+        if(Input.GetMouseButtonDown(0))
+        {
+            projectile = Instantiate(projectilePrefab);
+            projectile.transform.position = launchPos;
+        }
+
+
+
+        projectile.transform.position = -delta + launchPos;
 
         if(Input.GetMouseButtonUp(0))
         {
@@ -46,18 +55,13 @@ public class Slingshot : MonoBehaviour
             Rigidbody rb = projectile.GetComponent<Rigidbody>();
             rb.isKinematic = false;
             rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-            rb.velocity = -delta * 10f;
+            rb.velocity = delta * 10f;
             projectile = null;
         }
 
-        if(Input.GetMouseButtonDown(0))
-        {
-            projectile = Instantiate(projectilePrefab);
-            projectile.transform.position = launchPos;
-        }
     }
 
-    private void OnMouseEnter()
+    private void OnMouseOver()
     {
         if(projectile == null)
         {

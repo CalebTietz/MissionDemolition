@@ -25,7 +25,7 @@ public class FollowCam : MonoBehaviour
         if(POI != null)
         {
             Rigidbody rb = POI.GetComponent<Rigidbody>();
-            if(rb != null && rb.IsSleeping())
+            if ((rb != null && rb.IsSleeping()) || Input.GetKey(KeyCode.R))
             {
                 POI = null ;
             }

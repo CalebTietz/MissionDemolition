@@ -8,6 +8,8 @@ public class Slingshot : MonoBehaviour
 
     public GameObject launchPoint;
     public GameObject projectilePrefab;
+    public GameObject projLinePrefab;
+    public float slingShotStrength = 15f;
 
     private bool aimMode = false;
     private GameObject projectile;
@@ -21,7 +23,7 @@ public class Slingshot : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!aimMode) return;
+        if (!aimMode || FollowCam.getPOI() != null) return;
 
         Vector3 mouse2D = Input.mousePosition;
         mouse2D.z = -Camera.main.transform.position.z;
@@ -44,9 +46,7 @@ public class Slingshot : MonoBehaviour
             projectile = Instantiate(projectilePrefab);
             projectile.transform.position = launchPos;
         }
-
-
-
+        
         projectile.transform.position = -delta + launchPos;
 
         if(Input.GetMouseButtonUp(0))
@@ -55,7 +55,9 @@ public class Slingshot : MonoBehaviour
             Rigidbody rb = projectile.GetComponent<Rigidbody>();
             rb.isKinematic = false;
             rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-            rb.velocity = delta * 10f;
+            rb.velocity = delta * slingShotStrength;
+            FollowCam.setPOI(projectile);
+            Instantiate(projLinePrefab, projectile.transform);
             projectile = null;
         }
 
@@ -63,7 +65,7 @@ public class Slingshot : MonoBehaviour
 
     private void OnMouseOver()
     {
-        if(projectile == null)
+        if(projectile == null && FollowCam.getPOI() == null)
         {
             launchPoint.SetActive(true);
         }

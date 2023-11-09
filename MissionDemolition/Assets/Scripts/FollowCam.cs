@@ -4,15 +4,28 @@ using UnityEngine;
 
 public class FollowCam : MonoBehaviour
 {
+    private static FollowCam S;
     private static GameObject POI;
+
+    public enum eView
+    {
+        none,
+        slingshot,
+        castle,
+        both
+    };
+
     public float easing = 0.5f;
     public Vector2 minXY = Vector2.zero;
+    public GameObject viewBothGO;
 
     float camZ;
     float camOrthoSize;
+    public eView nextView = eView.slingshot;
 
     void Awake()
     {
+        S = this;
         camZ = this.transform.position.z;
         camOrthoSize = Camera.main.orthographicSize;
     }
@@ -44,6 +57,43 @@ public class FollowCam : MonoBehaviour
         transform.position = dest;
 
         Camera.main.orthographicSize = dest.y + camOrthoSize;
+    }
+
+    public void SwitchView(eView newView)
+    {
+        if(newView == eView.none)
+        {
+            newView = nextView;
+        }
+
+        switch(newView)
+        {
+            case eView.slingshot:
+                POI = null;
+                nextView = eView.castle;
+                break;
+
+            case eView.castle:
+                POI = MissionDemolition.GET_CASTLE();
+                nextView = eView.both;
+                break;
+
+            case eView.both:
+                POI = viewBothGO;
+                nextView = eView.slingshot;
+                break;
+
+        }
+    }
+
+    public void SwitchView()
+    {
+        SwitchView(eView.none);
+    }
+
+    public static void SWITCH_VIEW(eView newView)
+    {
+        S.SwitchView(newView);
     }
 
     public static GameObject getPOI()

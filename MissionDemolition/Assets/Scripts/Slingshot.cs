@@ -59,6 +59,7 @@ public class Slingshot : MonoBehaviour
             FollowCam.setPOI(projectile);
             Instantiate(projLinePrefab, projectile.transform);
             projectile = null;
+            MissionDemolition.SHOT_FIRED();
         }
 
     }
